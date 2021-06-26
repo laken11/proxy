@@ -1,0 +1,37 @@
+version: "2"
+services:
+  proxy:
+    container_name: 'nginx-reverse-proxy-ssl'
+    image: nginx:latest
+    networks:
+      - web-api-network
+      - web-frontend-network
+      - idhgateway-network
+      - storagegateway-network
+      - docker-network
+    ports: 
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./default.conf:/etc/nginx/conf.d/default.conf
+      - ./www:/var/www/html
+      - ./includes/:/etc/nginx/includes/
+      - ./dh-param/dhparam-2048.pem:/etc/ssl/certs/dhparam-2048.pem
+      - /docker-volumes/etc/letsencrypt/live/www.idhmelta.com/fullchain.pem:/etc/letsencrypt/live/www.idhmelta.com/fullchain.pem
+      - /docker-volumes/etc/letsencrypt/live/www.idhmelta.com/privkey.pem:/etc/letsencrypt/live/www.idhmelta.com/privkey.pem
+networks:
+  web-api-network:
+    external: true
+    name: web-api-network
+  web-frontend-network:
+    external: true
+    name: web-frontend-network
+  idhgateway-network:
+    external: true
+    name: idhgateway-network
+  storagegateway-network:
+    external: true
+    name: storagegateway-network
+  docker-network:
+    driver: bridge
+
